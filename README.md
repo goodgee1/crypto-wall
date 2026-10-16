@@ -1,1 +1,1 @@
-# crypto-wall
+# crypto-wallet-earn
