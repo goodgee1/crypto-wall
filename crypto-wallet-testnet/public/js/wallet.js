@@ -211,25 +211,20 @@ window.copyAddr = function () {
   toast('Address copied', 'success', 1500);
 };
 
-/* ---------------- DEPOSIT ---------------- */
 window.deposit = async function () {
   const btn = document.getElementById('btn-deposit');
-  const note = (document.getElementById('d-note')?.value || '').trim();
-
   if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
 
   try {
-    const tx = await api('/api/wallet/deposit', {
+    await api('/api/wallet/deposit', {
       method: 'POST',
       body: JSON.stringify({
         currency: 'USDT',
         network: selectedNet.id,
-        note
+        note: ''
       })
     });
     toast('Deposit submitted — awaiting network confirmation', 'success');
-    const noteEl = document.getElementById('d-note');
-    if (noteEl) noteEl.value = '';
     loadTxs();
     loadLimits();
   } catch (e) {

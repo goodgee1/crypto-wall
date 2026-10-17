@@ -1,17 +1,33 @@
+/* ============================================================
+   NovaWallet — Notification Bell
+   The bell itself is rendered by ui.js (inside the nav).
+   This file only fetches data and wires clicks.
+   ============================================================ */
+
 let pollHandle = null;
 
+/* ---------------- FETCH & RENDER ---------------- */
 async function refreshNotifications() {
+  const bell = document.querySelector('.notif-bell');
+  const panel = document.querySelector('.notif-panel');
+  // The nav might not be rendered yet on first tick — retry next cycle
+  if (!bell || !panel) return;
+
   try {
     const r = await api('/api/notifications');
     renderBell(r.unread);
     renderDropdown(r.list);
-  } catch {}
+  } catch (e) {
+    // silent — page might not be authenticated yet or on a public page
+  }
 }
 
 function renderBell(unread) {
   const bell = document.querySelector('.notif-bell');
   if (!bell) return;
   const badge = bell.querySelector('.notif-badge');
+  if (!badge) return;
+
   if (unread > 0) {
     badge.textContent = unread > 9 ? '9+' : unread;
     badge.style.display = 'grid';
@@ -23,14 +39,22 @@ function renderBell(unread) {
 function renderDropdown(list) {
   const panel = document.querySelector('.notif-panel');
   if (!panel) return;
+
   if (!list.length) {
     panel.innerHTML = '<div class="empty" style="padding:20px;">No notifications</div>';
     return;
   }
+
   const icons = {
-    deposit: '↓', withdraw: '↑', stake: '📈',
-    kyc: '🛡️', security: '🔒', referral: '🎁', system: 'ℹ️'
+    deposit:  '↓',
+    withdraw: '↑',
+    stake:    '📈',
+    kyc:      '🛡️',
+    security: '🔒',
+    referral: '🎁',
+    system:   'ℹ️'
   };
+
   panel.innerHTML = `
     <div class="notif-head">
       <span>Notifications</span>
@@ -49,16 +73,22 @@ function renderDropdown(list) {
     </div>`;
 }
 
+/* ---------------- ACTIONS ---------------- */
 window.markRead = async (id) => {
-  await api(`/api/notifications/${id}/read`, { method: 'POST' });
-  refreshNotifications();
+  try {
+    await api(`/api/notifications/${id}/read`, { method: 'POST' });
+    refreshNotifications();
+  } catch {}
 };
 
 window.markAllRead = async () => {
-  await api('/api/notifications/read-all', { method: 'POST' });
-  refreshNotifications();
+  try {
+    await api('/api/notifications/read-all', { method: 'POST' });
+    refreshNotifications();
+  } catch {}
 };
 
+/* ---------------- HELPERS ---------------- */
 function timeAgo(dateStr) {
   const s = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
   if (s < 60) return 'just now';
@@ -67,41 +97,37 @@ function timeAgo(dateStr) {
   return Math.floor(s / 86400) + 'd ago';
 }
 
-function mountBell() {
-  const links = document.querySelector('.nav-links');
-  if (!links || links.querySelector('.notif-bell')) return;
-  const wrap = document.createElement('div');
-  wrap.className = 'notif-wrap';
-  wrap.innerHTML = `
-    <div class="notif-bell" data-notif-toggle>
-      🔔
-      <span class="notif-badge" style="display:none;"></span>
-    </div>
-    <div class="notif-panel glass"></div>`;
-  const themeToggle = links.querySelector('.theme-toggle');
-  if (themeToggle) links.insertBefore(wrap, themeToggle);
-  else links.appendChild(wrap);
-
-  wrap.querySelector('[data-notif-toggle]').addEventListener('click', (e) => {
+/* ---------------- BELL TOGGLE ---------------- */
+// The bell element is created by ui.js — we just need one global handler
+// that works regardless of when the bell appears in the DOM.
+document.addEventListener('click', (e) => {
+  const toggle = e.target.closest('[data-notif-toggle]');
+  if (toggle) {
     e.stopPropagation();
-    wrap.querySelector('.notif-panel').classList.toggle('open');
-  });
-  document.addEventListener('click', () => {
-    document.querySelector('.notif-panel')?.classList.remove('open');
-  });
-}
+    const panel = toggle.parentElement.querySelector('.notif-panel');
+    if (panel) panel.classList.toggle('open');
+    return;
+  }
+  // Close the panel when clicking anywhere else
+  if (!e.target.closest('.notif-panel')) {
+    document.querySelectorAll('.notif-panel.open').forEach(p => p.classList.remove('open'));
+  }
+});
 
-function startNotifPolling() {
-  mountBell();
-  refreshNotifications();
-  if (pollHandle) clearInterval(pollHandle);
-  pollHandle = setInterval(refreshNotifications, 20_000);
+/* ---------------- POLLING ---------------- */
+function initNotifications() {
+  if (!localStorage.getItem('token')) return;
+
+  // Wait for ui.js to finish rendering the nav, then start
+  setTimeout(() => {
+    refreshNotifications();
+    if (pollHandle) clearInterval(pollHandle);
+    pollHandle = setInterval(refreshNotifications, 20_000);
+  }, 200);
 }
 
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    if (localStorage.getItem('token')) startNotifPolling();
-  });
+  document.addEventListener('DOMContentLoaded', initNotifications);
 } else {
-  if (localStorage.getItem('token')) startNotifPolling();
+  initNotifications();
 }
