@@ -39,12 +39,11 @@
     </div>
 
     <div class="grid grid-2">
-      <!-- ================= DEPOSIT CARD ================= -->
+          <!-- ================= DEPOSIT CARD ================= -->
       <div class="card qr-card">
         <h3>Deposit USDT</h3>
         <p class="tag" style="margin-bottom: 16px;">
           Send only <b id="dep-sym">USDT</b> on <b id="dep-net">TRC20</b> to this address.
-          Balance updates after network confirmation.
         </p>
 
         <div class="qr-wrap" id="qr"></div>
@@ -59,16 +58,29 @@
           Confirms in ~<span id="dep-conf">19</span> blocks
         </p>
 
-        <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px;">
-          <label>Reference (optional)</label>
-          <input id="d-note" placeholder="e.g. invoice #1234" />
-          <button style="width:100%" id="btn-deposit" onclick="deposit()">I have sent the funds</button>
-          <p class="tag" style="margin-top: 10px; text-align:center;">
-            We'll credit your wallet once your transfer is confirmed on-chain.
-          </p>
+        <div style="
+          margin-top: 20px;
+          padding: 14px 16px;
+          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(34,211,238,.08), rgba(74,222,128,.06));
+          border: 1px solid rgba(34,211,238,.22);
+          font-size: 13px;
+          line-height: 1.6;
+        ">
+          <div style="display:flex; gap:10px; align-items:flex-start;">
+            <span style="font-size: 18px; line-height:1;">💡</span>
+            <div>
+              <b>Sent the funds?</b><br>
+              If your deposit doesn't start processing automatically, tap the button below.
+              We'll pick it up on-chain and credit your wallet once confirmed.
+            </div>
+          </div>
         </div>
-      </div>
 
+        <button style="width:100%; margin-top: 16px;" id="btn-deposit" onclick="deposit()">
+          I have sent the funds
+        </button>
+      </div>
       <!-- ================= WITHDRAW CARD ================= -->
       <div class="card">
         <h3>Withdraw USDT</h3>
@@ -186,6 +198,7 @@
   
   <script src="/js/ui.js"></script>
   <script src="/js/auth.js"></script>
+  <script src="/js/prices.js"></script>
   <script src="/js/notifications.js"></script>
   <script src="/js/qr-scan.js"></script>
   <script src="/js/wallet.js"></script>
