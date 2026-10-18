@@ -12,8 +12,10 @@ const priceCache = {
   'ETH/USDT': { price: 3500,  ts: 0 }
 };
 const CACHE_TTL = 3000; // 3 seconds
-let binanceBlocked = false; // once we detect 451, skip Binance for this session
+let binanceBlocked = false;
 let bybitBlocked = false;
+let krakenBlocked = false;
+let coincapBlocked = false;
 let coingeckoBlocked = false;
 
 /* ============================================================
