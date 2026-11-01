@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Copy Trading — NovaWallet</title>
+<script src="/js/theme.js"></script>
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <div class="nav glass">
+    <div class="brand"><div class="brand-logo">₮</div><span>Nova<span class="brand-accent">Wallet</span></span></div>
+    <div class="nav-links">
+      <a href="/dashboard.html" class="nav-link">Dashboard</a>
+      <a href="/portfolio.html" class="nav-link">Portfolio</a>
+      <a href="/orders.html" class="nav-link">Trade</a>
+      <a href="/copy.html" class="nav-link active">Copy</a>
+      <a href="/staking.html" class="nav-link">Stake</a>
+      <a href="/wallet.html" class="nav-link">Wallet</a>
+      <a href="/profile.html" class="nav-link">Profile</a>
+      <div class="theme-toggle" data-action="toggle-theme">🌓</div>
+      <a href="#" data-action="logout" class="nav-link">Logout</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Copy Trading</h2>
+    <p class="tag" style="margin-bottom: 20px;">Follow top traders. Their positions mirror into your account automatically.</p>
+
+    <div class="card" style="background: linear-gradient(135deg, rgba(74,222,128,.08), rgba(34,211,238,.04)); border-color: rgba(74,222,128,.3);">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 14px;">
+    <h3 style="margin:0;">🏆 Top of the Week</h3>
+    <span class="tag" id="leaderboard-week"></span>
+  </div>
+  <div id="leaderboard-top"></div>
+</div>
+
+    <div class="card">
+      <h3>My Active Copies</h3>
+      <div id="my-copies"></div>
+    </div>
+
+    <div class="card" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; padding:14px 18px;">
+  <span class="tag" style="margin-right:6px;">Filter:</span>
+  <select id="filter-tier" style="width:auto; margin:0; padding:8px 12px;" onchange="applyFilters()">
+    <option value="">All tiers</option>
+    <option value="diamond">💎 Diamond</option>
+    <option value="gold">🥇 Gold</option>
+    <option value="silver">🥈 Silver</option>
+    <option value="bronze">🥉 Bronze</option>
+  </select>
+  <select id="sort-by" style="width:auto; margin:0; padding:8px 12px;" onchange="applyFilters()">
+    <option value="roi">Top ROI</option>
+    <option value="winRate">Highest win rate</option>
+    <option value="followers">Most followers</option>
+    <option value="totalTrades">Most active</option>
+  </select>
+  <span class="tag" id="traders-count" style="margin-left:auto;"></span>
+</div>
+
+    <h3 style="margin: 24px 0 12px;">Featured Traders</h3>
+    <div class="card" style="display:flex; gap:10px; flex-wrap:wrap; align-items:center; padding:14px 18px;">
+  <input id="search-traders" type="text" placeholder="Search traders…"
+    style="flex:1; min-width:180px; margin:0;" oninput="applyFilters()" />
+  <select id="filter-tier" style="width:auto; margin:0; padding:8px 12px;" onchange="applyFilters()">
+    <option value="">All tiers</option>
+    <option value="diamond">💎 Diamond</option>
+    <option value="gold">🥇 Gold</option>
+    <option value="silver">🥈 Silver</option>
+    <option value="bronze">🥉 Bronze</option>
+  </select>
+  <select id="sort-by" style="width:auto; margin:0; padding:8px 12px;" onchange="applyFilters()">
+    <option value="roi">Top ROI</option>
+    <option value="winRate">Win rate</option>
+    <option value="followers">Followers</option>
+    <option value="totalTrades">Active</option>
+  </select>
+  <span class="tag" id="traders-count" style="margin-left:auto;"></span>
+</div>
+    <div class="grid grid-2" id="traders"></div>
+    <div id="pagination"></div>
+  </div>
+
+  <div class="modal" id="follow-modal">
+    <div class="modal-inner glass">
+      <div class="modal-head">
+        <h3 id="follow-title">Follow Trader</h3>
+        <button class="modal-close" onclick="closeModal('follow-modal')">×</button>
+      </div>
+      <div id="follow-body"></div>
+    </div>
+  </div>
+
+  <script src="/js/ui.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/notifications.js"></script>
+  <script src="/js/copy.js"></script>
+</body>
+</html>

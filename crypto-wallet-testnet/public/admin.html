@@ -8,22 +8,24 @@
 <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
- <div class="nav glass">
-  <div class="brand">
-    <div class="brand-logo">₮</div>
-    <span>Nova<span class="brand-accent">Wallet</span></span>
+  <div class="nav glass">
+    <div class="brand">
+      <div class="brand-logo">₮</div>
+      <span>Nova<span class="brand-accent">Wallet</span></span>
+    </div>
+    <div class="nav-links">
+      <a href="/dashboard.html" class="nav-link">Dashboard</a>
+      <a href="/portfolio.html" class="nav-link">Portfolio</a>
+      <a href="/orders.html" class="nav-link">Trade</a>
+      <a href="/copy.html" class="nav-link">Copy</a>
+      <a href="/staking.html" class="nav-link">Stake</a>
+      <a href="/swap.html" class="nav-link">Swap</a>
+      <a href="/wallet.html" class="nav-link">Wallet</a>
+      <a href="/profile.html" class="nav-link">Profile</a>
+      <div class="theme-toggle" data-action="toggle-theme" title="Toggle theme">🌓</div>
+      <a href="#" data-action="logout" class="nav-link">Logout</a>
+    </div>
   </div>
-  <div class="nav-links">
-    <a href="/dashboard.html" class="nav-link">Dashboard</a>
-    <a href="/staking.html" class="nav-link">Stake</a>
-    <a href="/swap.html" class="nav-link">Swap</a>
-    <a href="/wallet.html" class="nav-link">Wallet</a>
-    <a href="/networks.html" class="nav-link">Networks</a>
-    <a href="/profile.html" class="nav-link">Profile</a>
-    <div class="theme-toggle" data-action="toggle-theme" title="Toggle theme">🌓</div>
-    <a href="#" data-action="logout" class="nav-link">Logout</a>
-  </div>
-</div>
 
   <div class="container">
     <h2>Admin Dashboard</h2>
@@ -40,6 +42,67 @@
       <div id="pending" style="margin-top:16px;"></div>
     </div>
 
+        <div class="card">
+      <h3>Copy Trading</h3>
+      <p class="tag" style="margin-bottom: 14px;">
+        Manage traders. "Reset & Re-seed" wipes and repopulates the default 6.
+        "Populate 100+" adds generated traders. CSV import supports bulk upload.
+      </p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="danger sm" onclick="seedCopyTraders(true)">Reset & Re-seed</button>
+        <button class="secondary sm" onclick="populateCopyTraders()">Populate 100+</button>
+        <button class="secondary sm" onclick="snapshotLeaderboard()">Snapshot Week</button>
+      </div>
+      <div id="seed-copy-result" style="margin-top: 12px;"></div>
+    </div>
+
+    <div class="card">
+      <h3>Import Traders (CSV)</h3>
+      <p class="tag" style="margin-bottom: 12px;">
+        Required: <code>displayName, bio, tier, roi30d, winRate</code> ·
+        Optional: <code>followers, totalTrades, performanceFee, platformFee</code>
+      </p>
+      <input type="file" id="csv-file" accept=".csv" style="margin-bottom: 12px;" />
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button onclick="importTradersCsv()">Import CSV</button>
+        <button class="secondary" onclick="downloadCsvTemplate()">Download Template</button>
+      </div>
+      <div id="csv-import-result" style="margin-top: 12px;"></div>
+    </div>
+
+    <div class="card">
+      <h3>Copy Trading Activity</h3>
+      <div class="grid grid-3" id="copy-stats"></div>
+      <div id="copy-relations"></div>
+
+<div class="modal" id="adjust-pnl-modal">
+  <div class="modal-inner glass" style="max-width: 440px;">
+    <div class="modal-head">
+      <h3>Adjust Copy PnL</h3>
+      <button class="modal-close" onclick="closeModal('adjust-pnl-modal')">×</button>
+    </div>
+    <div id="adjust-pnl-body"></div>
+  </div>
+</div>
+
+<div class="modal" id="adjust-fees-modal">
+  <div class="modal-inner glass" style="max-width: 440px;">
+    <div class="modal-head">
+      <h3>Set Profit-Sharing Fees</h3>
+      <button class="modal-close" onclick="closeModal('adjust-fees-modal')">×</button>
+    </div>
+    <div id="adjust-fees-body"></div>
+  </div>
+</div>
+    </div>
+
+    <div class="card">
+      <h3>Profit Sharing</h3>
+      <div class="grid grid-3" id="fee-stats"></div>
+      <h4 style="margin-top: 18px; font-size: 13px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.08em;">Top Earning Traders</h4>
+      <div id="fee-top" style="margin-top: 10px;"></div>
+    </div>
+
     <div class="card">
       <h3>Broadcast Banner</h3>
       <label>Message shown to all users</label>
@@ -49,15 +112,16 @@
         <span style="font-size:13px; color: var(--text-dim);">Activate banner</span>
       </label>
       <button onclick="saveBanner()">Publish</button>
+
       <div class="row" style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);">
-  <div>
-    <div class="row-label">Maintenance mode</div>
-    <div class="row-sub">Blocks all API calls except auth, admin, and settings</div>
-  </div>
-  <div class="switch" id="maintenance-switch"></div>
-</div>
-<label style="margin-top: 12px;">Maintenance message</label>
-<input id="maintenance-msg" placeholder="We are upgrading. Back in 15 minutes." />
+        <div>
+          <div class="row-label">Maintenance mode</div>
+          <div class="row-sub">Blocks all API calls except auth, admin, and settings</div>
+        </div>
+        <div class="switch" id="maintenance-switch"></div>
+      </div>
+      <label style="margin-top: 12px;">Maintenance message</label>
+      <input id="maintenance-msg" placeholder="We are upgrading. Back in 15 minutes." />
     </div>
 
     <div class="card">
@@ -83,8 +147,8 @@
 
   <script src="/js/ui.js"></script>
   <script src="/js/auth.js"></script>
-  <script src="/js/prices.js"></script>
   <script src="/js/notifications.js"></script>
+  <script src="/js/csv-import.js"></script>
   <script src="/js/admin.js"></script>
 </body>
 </html>
